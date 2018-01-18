@@ -1,4 +1,3 @@
-# EAS
 Plugin Builder Results
 
 Your plugin EAS was created in:

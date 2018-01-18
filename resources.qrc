@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/EAS" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>
