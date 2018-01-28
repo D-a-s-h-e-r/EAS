@@ -1,33 +1,28 @@
-Plugin Builder Results
+Equal Area Slope
 
-Your plugin EAS was created in:
-    C:\Users\Andrew\.qgis2\python\plugins\EAS
+by Andrew Campbell
+andrew.j.campbell@aecom.com
 
-Your QGIS plugin directory is located at:
-    C:/Users/Andrew/.qgis2/python/plugins
+This plug-in estimates the equal area slope of polylines using an underlying topography raster.
 
-What's Next:
+Estimating the equal area slope of a catchment or flow path is a necessary step in many hydrological calculations. While not a particularly difficult calculation, it can be time-consuming and hard to document, especially when doing rework. This plug-in aims to streamline the process by providing a method for estimating the equal area slopes of all features in the input vector layer. The algorithm creates a virtual layer with the calculated results in its attribute table.
 
-  * Copy the entire directory containing your new plugin to the QGIS plugin
-    directory
+Mathematically equal area slope (EAS) can be expressed as
 
-  * Compile the resources file using pyrcc4
+EAS = (2 * A) / (L ^ 2) - (z / L)
 
-  * Run the tests (``make test``)
+Where,
+A = area under line, which can be estimated by the trapezoidal rule
+L = length of line
+z = elevation of line at its downstream end
 
-  * Test the plugin by enabling it in the QGIS plugin manager
+Current limitations
+• vector and raster layers must be in the same coordinate reference system;
+• vector layer extents must reside within raster layer extents;
+• vector layer must be a polyline or polygon layer;
+• assumes some thought has been put into digitising the flow paths;
+• samples only the first band of raster.
 
-  * Customize it by editing the implementation file: ``EAS.py``
+Subsequent revisions will improve the plug-in to better handle aforementioned limitations.
 
-  * Create your own custom icon, replacing the default icon.png
-
-  * Modify your user interface by opening EAS.ui in Qt Designer
-
-  * You can use the Makefile to compile your Ui and resource files when
-    you make changes. This requires GNU make (gmake)
-
-For more information, see the PyQGIS Developer Cookbook at:
-http://www.qgis.org/pyqgis-cookbook/index.html
-
-(C) 2011-2014 GeoApt LLC - geoapt.com
-Git revision : $Format:%H$
+Please email me at andrew.j.campbell@aecom.com with any suggested improvements!
