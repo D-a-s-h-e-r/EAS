@@ -1,7 +1,8 @@
 Equal Area Slope
 
-by Andrew Campbell
-andrew.j.campbell@aecom.com
+Creator: Andrew Campbell
+Email: andrew.j.campbell@aecom.com
+Webpage: https://github.com/D-a-s-h-e-r/EAS
 
 This plug-in estimates the equal area slope of polylines using an underlying topography raster.
 
