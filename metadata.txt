@@ -10,7 +10,7 @@
 name=Equal Area Slope
 qgisMinimumVersion=2.0
 description=This plug-in estimates the equal area slope of polylines using an underlying topography raster.
-version=0.1
+version=0.2
 author=Andrew Campbell
 email=andrew.j.campbell@aecom.com
 
