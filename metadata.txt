@@ -9,14 +9,12 @@
 [general]
 name=Equal Area Slope
 qgisMinimumVersion=2.0
-description=This plug-in calculates the equal area slope of polylines from an underlying topography raster.
+description=This plug-in estimates the equal area slope of polylines using an underlying topography raster.
 version=0.1
 author=Andrew Campbell
 email=andrew.j.campbell@aecom.com
 
-
-
-about=Calculating the equal area slope of a catchment or flow path is a necessary step in many hydrological calculations. While it is not a particularly difficult calculation, it can be fiddly and time-consuming, especially when doing rework. This plug-in aims to streamline the process.
+about=Estimating the equal area slope of a catchment or flow path is a necessary step in many hydrological calculations. While not a particularly difficult calculation, it can be time-consuming and hard to document, especially when doing rework. This plug-in aims to streamline the process by providing a method for estimating the equal area slopes of all features in the input vector layer. The algorithm creates a virtual layer with the calculated results in its attribute table.
 
 tracker=https://github.com/D-a-s-h-e-r/EAS/issues
 repository=https://github.com/D-a-s-h-e-r/EAS
@@ -25,7 +23,7 @@ repository=https://github.com/D-a-s-h-e-r/EAS
 # Recommended items:
 
 # Uncomment the following line and add your changelog:
-# changelog=
+changelog=Equal area slope is now estimated by the average of a forward and backward sample pass along the line, which means drawing direction is not important. Removed bug where one extra point was sometimes being sampled beyond the end of a line
 
 # Tags are comma separated with spaces allowed
 tags=dem, flood, hydraulics, hydrology
