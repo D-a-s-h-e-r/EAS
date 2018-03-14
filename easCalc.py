@@ -30,8 +30,6 @@ from qgis.core import (QgsVectorLayer, QgsRasterLayer, QgsMapLayerRegistry, QgsG
 # handle different projections OR if vcrs <> rcrs then raise warning and end
 # handle non-line vector layer input
 
-
-
 def samplepoint(d, geom, rlayer):
     p = QgsGeometry.fromPoint(geom.interpolate(d).asPoint())
     c = p.asPoint()
@@ -42,23 +40,24 @@ def traparea(o, k, L):
     a = 0
     j = 0
     while j < k - 1:
+        
         s1 = float(o[j].split(",")[0])
         s2 = float(o[j+1].split(",")[0])
         ds = abs(s2 - s1)
+        
         z1 = float(o[j].split(",")[1])
         z2 = float(o[j+1].split(",")[1])
         az = (z1 + z2) /2
+        
         a += ds * az
         j += 1
         
     z1 = min(float(o[k-1].split(",")[1]), float(o[0].split(",")[1]))
     z2 = ((2*a)/L) - z1
-    
     return 100 * (z2 - z1)/L
 
-def forwardpass(f, vlayer, rlayer, rs):
+def pass_1(geom, rlayer, rs):
 
-    geom = f.geometry()
     L = geom.length()
 
     # compile points
@@ -71,14 +70,14 @@ def forwardpass(f, vlayer, rlayer, rs):
     #mid points
     d = 0
     k = 1
-    while d + rs < L:
+    while d < L:
 
         # ensure same cell is not being sampled twice
         p1 = QgsGeometry.fromPoint(geom.interpolate(d).asPoint())
         x1 = p1.centroid().asPoint().x()
         y1 = p1.centroid().asPoint().y()
         
-        p2 = QgsGeometry.fromPoint(geom.interpolate(d+rs).asPoint())
+        p2 = QgsGeometry.fromPoint(geom.interpolate(d + rs).asPoint())
         x2 = p2.centroid().asPoint().x()
         y2 = p2.centroid().asPoint().y()
         
@@ -91,8 +90,8 @@ def forwardpass(f, vlayer, rlayer, rs):
         if d + s >= L:
             break
 
-        z = samplepoint(d+s, geom, rlayer)
-        o.append('%f, %f \n'%(d+s, z))
+        z = samplepoint(d + s, geom, rlayer)
+        o.append('%f, %f \n'%(d + s, z))
 
         d += s
         k += 1
@@ -104,9 +103,8 @@ def forwardpass(f, vlayer, rlayer, rs):
 
     return traparea(o, k, L)
 
-def backwardpass(f, vlayer, rlayer, rs):
+def pass_2(geom, rlayer, rs):
 
-    geom = f.geometry()
     L = geom.length()
 
     # compile points
@@ -119,14 +117,14 @@ def backwardpass(f, vlayer, rlayer, rs):
     #mid points
     d = L
     k = 1
-    while d - rs > 0:
+    while d > 0:
 
         # ensure same cell is not being sampled twice
         p1 = QgsGeometry.fromPoint(geom.interpolate(d).asPoint())
         x1 = p1.centroid().asPoint().x()
         y1 = p1.centroid().asPoint().y()
         
-        p2 = QgsGeometry.fromPoint(geom.interpolate(d-rs).asPoint())
+        p2 = QgsGeometry.fromPoint(geom.interpolate(d - rs).asPoint())
         x2 = p2.centroid().asPoint().x()
         y2 = p2.centroid().asPoint().y()
         
@@ -139,8 +137,8 @@ def backwardpass(f, vlayer, rlayer, rs):
         if d - s <= 0:
             break
 
-        z = samplepoint(d-s, geom, rlayer)
-        o.append('%f, %f \n'%(d-s, z))
+        z = samplepoint(d - s, geom, rlayer)
+        o.append('%f, %f \n'%(d - s, z))
 
         d -= s
         k += 1
@@ -167,23 +165,25 @@ def main(vlayer, rlayer):
     uri = 'linestring?crs='+vcrs+'&field=id:integer&field=eas_percent:double(10,5)'
     olayer = QgsVectorLayer(uri,  vlayer.name()+'_eas', "memory")
     pr= olayer.dataProvider()
-    g = QgsFeature()
+    h = QgsFeature()
         
     i = 0
     # loops through all the features in vector layer
     for f in vlayer.getFeatures():
 
-        pl = f.geometry().asPolyline()
+        geom = f.geometry()
+        pl = geom.asPolyline()
 
         #equal area slope is an average of a forward pass and backward pass along the line
-        eas = (forwardpass(f, vlayer, rlayer, rs) + backwardpass(f, vlayer, rlayer, rs)) /2
+        eas1 = pass_1(geom, rlayer, rs)
+        eas2 = pass_2(geom, rlayer, rs)
+        eas = (eas1 + eas2) / 2
         
         # creates new geometries and populates attribute table
-        g.setAttributes([i, eas])
-        g.setGeometry(QgsGeometry.fromPolyline(pl))
-        pr.addFeatures([g])
+        h.setAttributes([i, eas])
+        h.setGeometry(QgsGeometry.fromPolyline(pl))
+        pr.addFeatures([h])
         
         i += 1
   
     QgsMapLayerRegistry.instance().addMapLayer(olayer)   
-
